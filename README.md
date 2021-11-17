@@ -133,3 +133,4 @@ Calls a loop on the MQTT client, and processes the current state of the device
 * [ ] ESP8266 platform support
 * [ ] TLS support
 
+Read our docs about [2Smart Cloud protocol](https://github.com/2SmartCloud/2smart-cloud-docs#2smart-cloud-protocol)
