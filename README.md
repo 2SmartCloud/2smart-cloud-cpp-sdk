@@ -47,7 +47,7 @@ Assigns a device object to the current homie object
 
 Connects to MQTT broker and initiates the device initialization.
 
-- user_hash: user ID, generated based on the mailbox.
+- user_hash: user ID, generated based on the email.
 - host: the address where the MQTT broker is installed.
 - broker_port: the port on which the broker is located.
 - token: password for connecting to a broker, generated when creating a user.
