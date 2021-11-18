@@ -1,7 +1,6 @@
-#include "mqtt_сlient.h"
+#include "mqtt_client.h"
 
 #include "utils/src/utils.h"
-
 
 MqttClient::MqttClient() { CreateClient(); }
 

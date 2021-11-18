@@ -1,17 +1,17 @@
 #pragma once
 #include <Arduino.h>
 
-#include "mqtt_client/src/mqtt_сlient.h"
+#include "mqtt_client/src/mqtt_client.h"
 
 class Notifier {
- public:
+   public:
     explicit Notifier(MqttClient* mqtt_client);
     ~Notifier() { Serial.println("Notifier destroyed"); }
 
     bool CreateNotification(String text);
     void SetUserHash(String user_hash);
 
- private:
+   private:
     const uint8_t kUserHashLength = 64;
 
     String user_hash_ = "";

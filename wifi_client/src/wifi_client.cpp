@@ -15,7 +15,7 @@ bool WifiClient::Connect() {
             WiFi.begin(ssid_name_.c_str(), ssid_password_.c_str());
             Serial.println("IP address: ");
             Serial.println(WiFi.localIP());
-            Serial.println(ssid_password_);
+            Serial.println(ssid_name_);
             Serial.println(ssid_password_);
             wifi_reconnect_time_ = millis();
         } else if (millis() - kBlinkingPairingDelay_ > last_blink_time_) {
