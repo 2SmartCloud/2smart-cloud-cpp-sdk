@@ -7,6 +7,7 @@ Node::Node(const char* name, const char* id, Device* device) {
     id_ = id;
     name_ = name;
     device_ = device;
+    device->AddNode(this);
 }
 
 bool Node::Init(Homie* homie) {

@@ -3,7 +3,6 @@
 #include <ArduinoJson.h>
 #include <HTTPClient.h>
 #include <HTTPUpdate.h>
-#include <WiFiClientSecure.h>
 
 #include "file_system/src/file_system.h"
 #include "utils/src/utils.h"
@@ -40,7 +39,6 @@ void AutoUpdateFw::HandleCurrentState() {
         fw_updated_ = false;
     }
     if (millis() - period_loop > kLoopDelay_) {
-        Serial.println("autoUpd node loop");
         CheckFirmware(fw_settings.version_);
 
         if (properties_.find("updatetime")->second->HasNewValue()) {

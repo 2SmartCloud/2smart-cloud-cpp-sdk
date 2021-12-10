@@ -13,6 +13,7 @@ Property::Property(const char* name, const char* id, Node* node, PROPERTY_TYPE t
     this->data_type_ = data_type;
     this->format_ = format;
     this->unit_ = unit;
+    node->AddProperty(this);
     Serial.print("Created property: ");
     Serial.println(name_);
 }
@@ -28,6 +29,7 @@ Property::Property(const char* name, const char* id, Device* device, PROPERTY_TY
     this->data_type_ = data_type;
     this->format_ = format;
     this->unit_ = unit;
+    device->AddProperty(this);
     Serial.print("Created property: ");
     Serial.println(name_);
 }
@@ -51,22 +53,19 @@ bool Property::Init(Homie* homie) {
 
     if (!status) Serial.printf("Init property %s failed\r\n", name_.c_str());
 
-    if (settable_) homie->SubscribeTopic(*this);
+    if (settable_ && !homie->SubscribeTopic(*this)) {
+        status = false;
+        Serial.println("unsubscribed " + this->id_);
+    }
     return status;
 }
 
 void Property::SetValue(String value) {
-    Serial.print("Message handled by property: ");
-    Serial.println(value);
+    this->has_new_value_ = value_ != value;
 
-    this->has_new_value_ = value != value_;
+    this->value_ = value;
 
-    if (this->has_new_value_) {
-        this->value_ = value;
-
-        HandleSettingNewValue();
-    }
-    Serial.print(has_new_value_ ? "new " : "old ");
+    HandleSettingNewValue();
     if (homie_ != nullptr) homie_->Publish(*this, "", value_, retained_);
 }
 

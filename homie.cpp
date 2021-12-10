@@ -1,13 +1,6 @@
 #include "homie.h"
 
-// #include "device/device.h"
-// #include "node/node.h"
-// #include "property/property.h"
-
-Homie::Homie(MqttClient* mqtt_client) {
-    mqtt_client_ = mqtt_client;
-    Serial.println("Homie object init");
-}
+Homie::Homie(MqttClient* mqtt_client) { mqtt_client_ = mqtt_client; }
 
 bool Homie::Init(String user_hash, String host, String broker_port, String token, MQTT_CALLBACK_SIGNATURE) {
     if (millis() - reinit_homie_time_ < kDelayForReconnectHomie) return false;
@@ -92,7 +85,7 @@ String Homie::GetTopicForEntity(const Property& property) {
 
     switch (property.GetType()) {
         case OPTION:
-            topic += "$option/";
+            topic += "$options/";
             topic += property.GetId();
             break;
         case TELEMETRY:
@@ -108,23 +101,30 @@ String Homie::GetTopicForEntity(const Property& property) {
 }
 
 void Homie::HandleMessage(String topic, byte* payload, unsigned int length) {
-    Serial.print("Message handled by homie : ");
     topic.replace(user_hash_ + "/sweet-home/", "");
     topic.replace(device_->GetId() + "/", "");
 
-    // found node
     uint8_t index_slash = topic.indexOf("/");
-    String node_id = topic.substring(0, index_slash);
-    Node* node = device_->GetNode(node_id);
-    Serial.printf("node is: %s\r\n", node->GetId().c_str());
+
+    uint8_t index_slash2 = topic.indexOf("/", index_slash + 1);
+    String property_id = topic.substring(index_slash + 1, index_slash2);
+
+    Property* property = nullptr;
+    if (!topic.startsWith("$options") && !topic.startsWith("$telemetry")) {
+        String node_id = topic.substring(0, index_slash);
+        Node* node = device_->GetNode(node_id);
+        if (property_id.startsWith("$options") || property_id.startsWith("$telemetry")) {
+            uint8_t index_slash3 = topic.indexOf("/", index_slash2 + 1);
+            property_id = topic.substring(index_slash2 + 1, index_slash3);
+        }
+        property = node->GetProperty(property_id);
+    } else {
+        property = device_->GetProperty(property_id);
+    }
 
     // found property
-    uint8_t index_slash2 = topic.indexOf("/", ++index_slash);
-    String property_id = topic.substring(index_slash, index_slash2);
-    Property* property = node->GetProperty(property_id);
-    Serial.printf("property is: %s\r\n", property->GetId().c_str());
 
-    String value;
+    String value = "";
     for (int i = 0; i < length; i++) {
         value += static_cast<char>(payload[i]);  // ------------ write payload
     }

@@ -10,7 +10,6 @@ class Device;
 class Node;
 class Homie;
 
-
 enum PROPERTY_TYPE { OPTION, TELEMETRY, SENSOR };
 
 class Property {
@@ -49,12 +48,12 @@ class Property {
     bool settable_;
     bool retained_;
 
-    String id_;
-    String name_;
-    String data_type_;
-    String format_;
-    String unit_;
-    String value_;
+    String id_ = "";
+    String name_ = "";
+    String data_type_ = "";
+    String format_ = "";
+    String unit_ = "";
+    String value_ = "";
 
     Node* node_ = nullptr;
     Device* device_ = nullptr;
