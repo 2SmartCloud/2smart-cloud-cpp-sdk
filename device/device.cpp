@@ -97,6 +97,7 @@ String Device::GetId() const { return id_; }
 
 String Device::GetFirmwareVersion() const { return fw_ver_; }
 Node *Device::GetNode(String id) { return nodes_.find(id)->second; }
+Property *Device::GetProperty(String id) { return properties_.find(id)->second; }
 
 void Device::HandleCurrentState() {
     // device logic + call Node::Loop for each node

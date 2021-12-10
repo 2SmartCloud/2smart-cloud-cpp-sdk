@@ -36,6 +36,7 @@ class Device {
     String GetId() const;
     String GetFirmwareVersion() const;
     Node* GetNode(String id);
+    Property* GetProperty(String id);
 
     void SetNotifier(Notifier* notifier);
 
