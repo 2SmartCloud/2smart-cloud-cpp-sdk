@@ -13,8 +13,6 @@ bool Notifications::Init(Homie* homie) {  // initialize toggles for notification
 
 void Notifications::HandleCurrentState() {
     if (millis() - period_loop_ > 10000) {
-        Serial.println("notify node loop");
-
         if (properties_.find("system")->second->HasNewValue()) {
             notifySettings.system_ = properties_.find("system")->second->GetValue() == "true";
             properties_.find("system")->second->SetHasNewValue(false);
