@@ -8,16 +8,20 @@
 #include "custom_nodes/auto_upd_firmw/auto_upd_firmw.h"
 #include "custom_nodes/notifications/notifications.h"
 #include "device/device.h"
+#include "file_system/src/file_system.h"
 #include "mqtt_client/src/mqtt_client.h"
 #include "node/node.h"
 #include "property/property.h"
+#include "wifi_ap/src/wifi_ap.h"
+#include "wifi_client/src/wifi_client.h"
+#include "web_server_base/src/web_server_base.h"
 
 class Device;
 class Node;
 class Property;
 
 class Homie {
-   public:
+ public:
     explicit Homie(MqttClient* mqtt_client);
     ~Homie() { Serial.println("Homie destroyed"); }
 
@@ -37,7 +41,7 @@ class Homie {
 
     bool IsConnected();
 
-   private:
+ private:
     const uint16_t kDelayForReconnectHomie = 5 * 1000;  // 5 sec
 
     uint32_t reinit_homie_time_ = 0;
