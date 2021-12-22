@@ -6,12 +6,6 @@ A class for controlling Homie entities and ensuring their interaction with the M
 
 This sdk currently support ESP32 platform.
 
-## Examples
-
-- [2Smart Cloud Relay](https://github.com/2SmartCloud/2smart-cloud-esp32-relay)
-- [2Smart Cloud Led Strip](https://github.com/2SmartCloud/2smart-cloud-esp32-led)
-- [2Smart Cloud AlexGyver Lamp](https://github.com/2SmartCloud/2smart-cloud-esp32-alexgyver-lamp)
-
 ***
 ## API
 
@@ -46,7 +40,19 @@ Handles the current state of the device.
 
 ***
 
+
+## Examples
+
+- [2Smart Cloud Relay](https://github.com/2SmartCloud/2smart-cloud-esp32-relay)
+- [2Smart Cloud Led Strip](https://github.com/2SmartCloud/2smart-cloud-esp32-led)
+- [2Smart Cloud AlexGyver Lamp](https://github.com/2SmartCloud/2smart-cloud-esp32-alexgyver-lamp)
+
 ## To Do
 * [ ] ESP8266 platform support
 * [ ] TLS support
 
+
+## Docs
+
+Read our docs about [2Smart Cloud protocol](https://github.com/2SmartCloud/2smart-cloud-docs#2smart-
+cloud-protocol)
