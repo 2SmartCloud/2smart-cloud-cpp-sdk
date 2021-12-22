@@ -20,6 +20,8 @@ class WifiClient {
     uint32_t wifi_reconnect_time_ = 0;
     uint32_t last_blink_time_ = 0;
 
+    bool wifi_connected = false;
+
     String ssid_name_;
     String ssid_password_;
 };

@@ -12,9 +12,9 @@
 #include "mqtt_client/src/mqtt_client.h"
 #include "node/node.h"
 #include "property/property.h"
+#include "web_server_base/src/web_server_base.h"
 #include "wifi_ap/src/wifi_ap.h"
 #include "wifi_client/src/wifi_client.h"
-#include "web_server_base/src/web_server_base.h"
 
 class Device;
 class Node;

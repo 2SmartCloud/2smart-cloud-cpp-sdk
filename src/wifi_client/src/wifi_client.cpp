@@ -9,6 +9,7 @@ void WifiClient::SetCredentials(String ssid_name, String ssid_password) {
 
 bool WifiClient::Connect() {
     if (WiFi.status() != WL_CONNECTED) {  // If not connected
+        wifi_connected = false;
         if (millis() - kWifiReconnectDelay_ > wifi_reconnect_time_ &&
             millis() - kWifiReconnectDelay_ < kWifiReconnectDelay_ * 2) {
             WiFi.mode(WIFI_STA);
@@ -25,6 +26,9 @@ bool WifiClient::Connect() {
         }
         return false;
     }
-    digitalWrite(kLedStatus_, true);
+    if (!wifi_connected) {
+        wifi_connected = true;
+        digitalWrite(kLedStatus_, true);
+    }
     return true;
 }
