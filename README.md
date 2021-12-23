@@ -43,6 +43,7 @@ Handles the current state of the device.
 
 ## Examples
 
+- [2Smart Cloud Blinker](https://github.com/2SmartCloud/2smart-cloud-esp32-blinker)
 - [2Smart Cloud Relay](https://github.com/2SmartCloud/2smart-cloud-esp32-relay)
 - [2Smart Cloud Led Strip](https://github.com/2SmartCloud/2smart-cloud-esp32-led)
 - [2Smart Cloud AlexGyver Lamp](https://github.com/2SmartCloud/2smart-cloud-esp32-alexgyver-lamp)
@@ -54,5 +55,4 @@ Handles the current state of the device.
 
 ## Docs
 
-Read our docs about [2Smart Cloud protocol](https://github.com/2SmartCloud/2smart-cloud-docs#2smart-
-cloud-protocol)
+Read our docs about [2Smart Cloud protocol](https://github.com/2SmartCloud/2smart-cloud-docs#2smart-cloud-protocol)
