@@ -31,6 +31,12 @@ class WebServerBase {
 
     void SetupWebServer();
 
+    void OnFirmwareUpload(AsyncWebServerRequest *request, const String &filename, size_t index, uint8_t *data,
+                          size_t len, bool final);
+    void OnRequestWithAuth(AsyncWebServerRequest *request, ArRequestHandlerFunction onRequest);
+
+    String FillPlaceholders(const String &var);
+
     AsyncWebServer *server_ = nullptr;
     Device *device_ = nullptr;
 };

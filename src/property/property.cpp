@@ -51,6 +51,8 @@ bool Property::Init(Homie* homie) {
     if (unit_)
         if (!homie->Publish(*this, "unit", unit_, true)) status = false;
 
+    if (!homie->Publish(*this, "", value_, retained_)) status = false;
+
     if (!status) Serial.printf("Init property %s failed\r\n", name_.c_str());
 
     if (settable_ && !homie->SubscribeTopic(*this)) {
