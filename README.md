@@ -1,4 +1,4 @@
-# 2Smart Cloud Cpp SDK
+## 2Smart Cloud Cpp SDK
 
 A SDK for creating a firmware for using with 2Smart Cloud.
 
