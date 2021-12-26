@@ -1,45 +1,6 @@
-# 2Smart Cloud
-
-A class for controlling Homie entities and ensuring their interaction with the MQTT broker.
-
 ## Platforms
 
 This sdk currently support ESP32 platform.
-
-***
-## API
-
-- Cloud2Smart()
-- void setup()
-- Device\* GetDevice()
-- void loop()
-
-***
-
-**Cloud2Smart()**
-
-Creates a Cloud2Smart object.
-
-***
-
-**void setup()**
-
-Setting up base features.
-
-***
-
-**Device\* GetDevice() **
-
-Returns a pointer to the [device](src/device/README.md) object.
-
-***
-
-**void loop()**
-
-Handles the current state of the device.
-
-***
-
 
 ## Examples
 
@@ -51,7 +12,6 @@ Handles the current state of the device.
 ## To Do
 * [ ] ESP8266 platform support
 * [ ] TLS support
-
 
 ## Docs
 
