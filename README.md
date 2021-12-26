@@ -1,3 +1,7 @@
+# 2Smart Cloud Cpp SDK
+
+A SDK for creating a firmware for using with 2Smart Cloud.
+
 ## Platforms
 
 This sdk currently support ESP32 platform.
