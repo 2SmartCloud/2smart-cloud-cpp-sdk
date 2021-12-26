@@ -19,4 +19,7 @@ This sdk currently support ESP32 platform.
 
 ## Docs
 
-Read our docs about [2Smart Cloud protocol](https://github.com/2SmartCloud/2smart-cloud-docs#2smart-cloud-protocol)
+Read our docs about [2Smart Cloud protocol](https://github.com/2SmartCloud/2smart-cloud-docs#2smart-cloud-protocol).  
+Main classes:
+- [2Smart Cloud](./src/README.md#2smart-cloud)
+- [Homie](./src/README.md#homie)
