@@ -1,3 +1,8 @@
+# Classes
+
+- [2Smart Cloud](#2smart-cloud)
+- [Homie](#homie)
+
 # 2Smart Cloud
 
 A class for controlling Homie entities and ensuring their interaction with the MQTT broker.
