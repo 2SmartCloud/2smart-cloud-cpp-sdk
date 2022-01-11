@@ -24,7 +24,7 @@ bool MqttClient::Reconnect() {
     if (this->username_ == "") return false;
     if (millis() - reconnect_mqtt_time_ < kDelayForReconnectMQTT_) return false;
     if (!client_->connected()) {
-        if (client_->connect(session_id_.c_str(), this->username_.c_str(), this->password_.c_str())) {
+        if (client_->connect(session_id_.c_str(), this->username_.c_str(), this->password_.c_str(),0,0,0,0,0)) {
             Serial.println("MQTT connected");
             if (need_reconnect_) mqtt_reconnected_ = true;
             need_reconnect_ = false;
