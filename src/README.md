@@ -1,3 +1,45 @@
+# Classes
+
+- [2Smart Cloud](#2smart-cloud)
+- [Homie](#homie)
+
+# 2Smart Cloud
+
+A class for controlling Homie entities and ensuring their interaction with the MQTT broker.
+
+## API
+
+- Cloud2Smart()
+- void setup()
+- Device\* GetDevice()
+- void loop()
+
+***
+
+**Cloud2Smart()**
+
+Creates a Cloud2Smart object.
+
+***
+
+**void setup()**
+
+Setting up base features.
+
+***
+
+**Device\* GetDevice() **
+
+Returns a pointer to the [device](src/device/README.md) object.
+
+***
+
+**void loop()**
+
+Handles the current state of the device.
+
+***
+
 # Homie
 
 A class for controlling Homie entities and ensuring their interaction with the MQTT broker.
