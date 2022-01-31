@@ -32,11 +32,15 @@ bool AutoUpdateFw::Init(Homie* homie) {
 void AutoUpdateFw::HandleCurrentState() {
     if (fw_updated_) {
         bool is_fw_notif_enabled = device_->IsFwNotifyEnabled();
-        if (is_fw_notif_enabled) device_->SendNotification(fwStates_.find(FW_UPDATED)->second.c_str());
-        fw_settings.version_ = device_->GetFirmwareVersion().toInt();
-        properties_.find("version")->second->SetValue(String(fw_settings.version_));
-        SaveFwSettings();
-        fw_updated_ = false;
+        if (is_fw_notif_enabled) {  // user enabled notifications for device
+            if (device_->SendNotification(fwStates_.find(FW_UPDATED)->second.c_str())) {
+                // reset fw_updated_ only on successfull notification
+                fw_settings.version_ = device_->GetFirmwareVersion().toInt();
+                properties_.find("version")->second->SetValue(String(fw_settings.version_));
+                SaveFwSettings();
+                fw_updated_ = false;
+            }
+        }
     }
     if (millis() - period_loop > kLoopDelay_) {
         CheckFirmware(fw_settings.version_);
@@ -45,8 +49,12 @@ void AutoUpdateFw::HandleCurrentState() {
             SetUpdateTime(properties_.find("updatetime")->second->GetValue());
             properties_.find("updatetime")->second->SetHasNewValue(false);
             new_fw_settings_ = true;
+        }
 
-            // logic
+        if (properties_.find("autoupdate")->second->HasNewValue()) {
+            fw_settings.autoUpdate_ = properties_.find("autoupdate")->second->GetValue() == "true";
+            properties_.find("autoupdate")->second->SetHasNewValue(false);
+            new_fw_settings_ = true;
         }
 
         if (properties_.find("update")->second->HasNewValue()) {
