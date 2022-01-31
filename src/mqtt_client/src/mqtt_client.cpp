@@ -7,6 +7,7 @@ MqttClient::MqttClient() { CreateClient(); }
 void MqttClient::CreateClient() {
     this->wifi_client_ = new WiFiClient;
     this->client_ = new PubSubClient(*wifi_client_);
+    session_id_.append(RandomString(millis(), 24));
 }
 
 bool MqttClient::Init(String username, String host, String port, String password, MQTT_CALLBACK_SIGNATURE) {
@@ -17,13 +18,13 @@ bool MqttClient::Init(String username, String host, String port, String password
     client_->setServer(this->host_.c_str(), this->port_.toInt());
     client_->setCallback(callback);
     client_->setSocketTimeout(SOCKET_CONNECTION_TIMEOUT_S);
-    session_id_.append(RandomString(millis(), 16));
     Serial.println("MqttClient::Init");
     return (this->Connect());
 }
 
 bool MqttClient::Connect() {
-    Serial.println("MqttClient::Connect");
+    Serial.print("MqttClient::Connect: ");
+    Serial.print(session_id_.c_str());
     if (this->username_ == "") return false;
     if (this->IsConnected()) return true;
     if (!this->CheckConnection()) {
