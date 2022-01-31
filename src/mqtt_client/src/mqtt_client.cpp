@@ -7,7 +7,7 @@ MqttClient::MqttClient() { CreateClient(); }
 void MqttClient::CreateClient() {
     this->wifi_client_ = new WiFiClient;
     this->client_ = new PubSubClient(*wifi_client_);
-    session_id_.append(RandomString(millis(), 24));
+    session_id_.append(RandomString(24));
 }
 
 bool MqttClient::Init(String username, String host, String port, String password, MQTT_CALLBACK_SIGNATURE) {
