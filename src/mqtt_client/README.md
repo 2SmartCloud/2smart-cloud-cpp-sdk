@@ -11,6 +11,9 @@ A class for working with the MQTT protocol.
 - void MqttLoop()
 - bool Subscribe(String topic)
 - bool Publish(String topic, String value, bool retained)
+- bool IsConnected();
+- bool IsReconnected();
+- bool Reconnect();
 
 ***
 
@@ -57,5 +60,29 @@ Checks if the client is connected to the broker and publishes a message to the t
 - retained: flag responsible for storing the message in the topic.
 
 Returns the status of the publication.
+
+***
+
+**bool IsConnected()**
+
+Checks if the client is connected to the broker
+
+Returns the connection status
+
+***
+
+**bool IsReconnected()**
+
+Checks if the client is reconnected to the broker
+
+Return the reconnect status
+
+***
+
+**bool Reconnect()**
+
+Reconnect to the broker
+
+Returns the connection status
 
 ***

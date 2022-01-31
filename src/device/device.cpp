@@ -57,7 +57,6 @@ bool Device::Init() {
     if (!InitNodes()) status = false;
 
     Serial.printf("Device init %s \r\n", (status) ? "success" : "failed");
-    need_reinit_ = !status;
     return status;
 }
 
@@ -102,7 +101,6 @@ Property *Device::GetProperty(String id) { return properties_.find(id)->second; 
 void Device::HandleCurrentState() {
     // device logic + call Node::Loop for each node
     if (millis() - last_millis_heartbeat > kHeartbeatDelay) {
-        if (need_reinit_) Init();
         SendHeartbeat();
         last_millis_heartbeat = millis();
     }
@@ -115,13 +113,22 @@ void Device::HandleCurrentState() {
 }
 
 void Device::SendHeartbeat() {
-    Serial.print("heartbeat ");
+    Serial.print("Device::SendHeartbeat - ");
 
     if (homie_->Publish(*this, "heartbeat", "", true)) {
         Serial.println("success");
     } else {
         Serial.println("failed");
-        need_reinit_ = true;
+    }
+}
+
+void Device::SendStateStatus() {
+    Serial.print("Device::SendStateStatus - ");
+
+    if (homie_->Publish(*this, "state", state_, true)) {
+        Serial.println("success");
+    } else {
+        Serial.println("failed");
     }
 }
 

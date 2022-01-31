@@ -7,6 +7,9 @@
 #include <map>
 #include <string>
 
+#define MAX_RETRIES 3
+#define SOCKET_CONNECTION_TIMEOUT_S 60
+
 class MqttClient {
  public:
     MqttClient();
@@ -21,10 +24,11 @@ class MqttClient {
     bool IsConnected();
     bool IsReconnected();
 
+    bool Reconnect();
+
  private:
     const uint16_t kDelayForReconnectMQTT_ = 5 * 1000;  // 5 sec
 
-    bool need_reconnect_ = false;
     bool mqtt_reconnected_ = false;
     uint32_t reconnect_mqtt_time_ = 0;
 
@@ -37,7 +41,8 @@ class MqttClient {
     WiFiClient *wifi_client_;
     PubSubClient *client_;
 
-    bool Reconnect();
+    bool Connect();
 
     void CreateClient();
+    bool CheckConnection();
 };

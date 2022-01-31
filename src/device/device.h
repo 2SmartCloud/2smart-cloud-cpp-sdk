@@ -49,13 +49,14 @@ class Device {
 
     bool IsConnected();
 
+    void SendStateStatus();
+
  private:
     bool InitNodes();
     bool InitProperties();
 
     void SendHeartbeat();
 
-    bool need_reinit_ = false;
     bool first_init = true;
 
     uint32_t last_millis_heartbeat = 0;

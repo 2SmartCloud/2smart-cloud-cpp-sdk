@@ -112,7 +112,12 @@ void Cloud2Smart::setup() {
 void Cloud2Smart::loop() {
     wifi_client.Connect();
 
-    homie.HandleCurrentState();  // mqttLoop();
+    // homie requires connected wifi client
+    if (wifi_client.isConnected()) {
+        homie.HandleCurrentState();
+    } else {  // standalone mode
+        device.HandleCurrentState();
+    }
 
     if (erase_flag) {
         EraseFlash();
