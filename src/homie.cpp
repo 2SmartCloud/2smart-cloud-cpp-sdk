@@ -11,7 +11,11 @@ bool Homie::Init(String user_hash, String host, String broker_port, String token
         Serial.println("Device not setted in homie");
         status = false;
     }
-    if (status) device_->Init();
+
+    if (status) {
+        status = device_->Init();
+    }
+
     Serial.printf("Homie init %s \r\n", (status) ? "success" : "failed");
     reinit_homie_time_ = millis();
 

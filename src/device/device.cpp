@@ -22,18 +22,14 @@ void Device::SetCredentials(DeviceData device_data) {
 }
 
 bool Device::Init() {
-    Serial.println("init device");
-    if (first_init) {
-        InitNodes();
-        first_init = false;
-        return false;
-    }
+    Serial.println("Device::Init()");
 
     if (!homie_->IsConnected()) {
-        Serial.println("homie not connected");
+        Serial.println("Device::Init: homie not connected");
 
         return false;
     }
+
     bool status = true;
 
     if (!homie_->Publish(*this, "name", name_, true)) status = false;
@@ -50,13 +46,12 @@ bool Device::Init() {
 
     if (!homie_->Publish(*this, "state", state_, true)) status = false;
 
-    Serial.println("base published");
-
     if (!InitProperties()) status = false;
 
     if (!InitNodes()) status = false;
 
     Serial.printf("Device init %s \r\n", (status) ? "success" : "failed");
+
     return status;
 }
 
