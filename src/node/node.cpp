@@ -11,16 +11,21 @@ Node::Node(const char* name, const char* id, Device* device) {
 }
 
 bool Node::Init(Homie* homie) {
-    homie_ = homie;
-    homie->Publish(*this, "name", name_, true);
-    homie->Publish(*this, "state", state_, true);
-    Serial.print("initialize node: ");
+    Serial.print("Node::Init: ");
     Serial.println(name_);
 
     bool status = true;
+
+    homie_ = homie;
+    if (!homie->Publish(*this, "name", name_, true)) status = false;
+    if (!homie->Publish(*this, "state", state_, true)) status = false;
+
     for (auto it = begin(properties_); it != end(properties_); ++it) {
         if (!(*it->second).Init(homie_)) status = false;
     }
+
+    if (!status) Serial.printf("Init node %s failed\r\n", name_.c_str());
+
     return status;
 }
 
