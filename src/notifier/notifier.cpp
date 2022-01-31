@@ -11,13 +11,17 @@ void Notifier::SetUserHash(String user_hash) {
 
 bool Notifier::CreateNotification(String text) {
     if (user_hash_.length() == kUserHashLength) {
-        Serial.print("notif ");
         String topic = user_hash_;
         topic += "/notifications/create";
-        Serial.print(topic);
-        Serial.print(" : ");
-        Serial.println(text);
-        return mqtt_client_->Publish(topic.c_str(), text.c_str(), false);
+
+        if (mqtt_client_->Publish(topic.c_str(), text.c_str(), false)) {
+            Serial.print("Notifier::CreateNotification: ");
+            Serial.print(topic);
+            Serial.print(" : ");
+            Serial.println(text);
+
+            return true;
+        }
     }
     return false;
 }
