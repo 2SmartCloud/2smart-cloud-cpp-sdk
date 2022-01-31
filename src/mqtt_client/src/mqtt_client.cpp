@@ -24,7 +24,7 @@ bool MqttClient::Init(String username, String host, String port, String password
 
 bool MqttClient::Connect() {
     Serial.print("MqttClient::Connect: ");
-    Serial.print(session_id_.c_str());
+    Serial.println(session_id_.c_str());
     if (this->username_ == "") return false;
     if (this->IsConnected()) return true;
     if (!this->CheckConnection()) {
