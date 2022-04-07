@@ -1,6 +1,6 @@
 #pragma once
 #include <Arduino.h>
-
+#include <custom_sensors/wifisignal/WifiSignal.h>
 #include "homie.h"
 
 class Cloud2Smart {

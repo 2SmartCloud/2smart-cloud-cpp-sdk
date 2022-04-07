@@ -12,25 +12,14 @@ AutoUpdateFw::AutoUpdateFw(const char* name, const char* id, Device* device) : N
 bool AutoUpdateFw::Init(Homie* homie) {
     Node::Init(homie);
     LoadFwSettings();
-
-    uint16_t fw_ver_actual = device_->GetFirmwareVersion().toInt();
-    uint16_t fw_ver_memory = properties_.find("version")->second->GetValue().toInt();
-
-    if (fw_ver_actual != fw_ver_memory) {
-        Serial.println("Firmware updated");
-        fw_updated_ = true;
-
-    } else {
-        String firmware_state = fwStates_.find(FW_ACTUAL)->second.c_str();
-        properties_.find("updatestate")->second->SetValue(firmware_state);
-    }
-
+    String str_staging_status = properties_.find("staging")->second->GetValue();
+    fw_settings.staging_status = str_staging_status == "true" ? true : false;
     return true;
-    // status;
 }
 
 void AutoUpdateFw::HandleCurrentState() {
     if (fw_updated_) {
+        properties_.find("updatestate")->second->SetValue(fwStates_.find(FW_UPDATED)->second.c_str());
         bool is_fw_notif_enabled = device_->IsFwNotifyEnabled();
         if (is_fw_notif_enabled) {  // user enabled notifications for device
             if (device_->SendNotification(fwStates_.find(FW_UPDATED)->second.c_str())) {
@@ -42,36 +31,69 @@ void AutoUpdateFw::HandleCurrentState() {
             }
         }
     }
-    if (millis() - period_loop > kLoopDelay_) {
-        CheckFirmware(fw_settings.version_);
 
-        if (properties_.find("updatetime")->second->HasNewValue()) {
-            SetUpdateTime(properties_.find("updatetime")->second->GetValue());
-            properties_.find("updatetime")->second->SetHasNewValue(false);
-            new_fw_settings_ = true;
-        }
+    CheckFirmware(fw_settings.version_);
 
-        if (properties_.find("autoupdate")->second->HasNewValue()) {
-            fw_settings.autoUpdate_ = properties_.find("autoupdate")->second->GetValue() == "true";
-            properties_.find("autoupdate")->second->SetHasNewValue(false);
-            new_fw_settings_ = true;
-        }
+    if (properties_.find("staging")->second->HasNewValue()) {
+        String str_staging_status = properties_.find("staging")->second->GetValue();
+        fw_settings.staging_status = str_staging_status == "true" ? true : false;
 
-        if (properties_.find("update")->second->HasNewValue()) {
-            properties_.find("update")->second->SetHasNewValue(false);
+        new_fw_settings_ = true;
+        properties_.find("staging")->second->SetHasNewValue(false);
+
+        if (!fw_settings.staging_status) {
+            Serial.println("[D] staging_status == false");
             force_update_ = true;
             CheckFirmware(properties_.find("version")->second->GetValue().toInt());
         }
+    }
 
+    if (properties_.find("updatetime")->second->HasNewValue()) {
+        SetUpdateTime(properties_.find("updatetime")->second->GetValue());
+        properties_.find("updatetime")->second->SetHasNewValue(false);
+        new_fw_settings_ = true;
+    }
+
+    if (properties_.find("autoupdate")->second->HasNewValue()) {
+        fw_settings.autoUpdate_ = properties_.find("autoupdate")->second->GetValue() == "true";
+        properties_.find("autoupdate")->second->SetHasNewValue(false);
+        new_fw_settings_ = true;
+    }
+
+    if (properties_.find("update")->second->HasNewValue()) {
+        properties_.find("update")->second->SetValue("");
+        properties_.find("update")->second->SetHasNewValue(false);
+        force_update_ = true;
+    }
+
+    if ((millis() - period_loop > kLoopDelay_)) {
         if (new_fw_settings_) {
             if (SaveFwSettings()) new_fw_settings_ = false;
         }
-
         period_loop = millis();
     }
 }
 
+void AutoUpdateFw::CheckUpdate() {
+    String firmware_state = fwStates_.find(FW_CHECK)->second.c_str();
+    properties_.find("updatestate")->second->SetValue(firmware_state);
+    if (fw_settings.staging_status) {
+        Serial.println("[D] Updating to new staging firmware...");
+        UpdateFirmware();
+    } else if (CheckFirmwareVersion() != properties_.find("version")->second->GetValue().toInt()) {
+        Serial.println("Available new firmware");
+        UpdateFirmware();
+    } else {
+        String firmware_state = fwStates_.find(FW_ACTUAL)->second.c_str();
+        properties_.find("updatestate")->second->SetValue(firmware_state);
+        Serial.println("Already on latest version");
+        force_update_ = false;
+    }
+}
+
 void AutoUpdateFw::CheckFirmware(uint8_t firmwareVer) {
+    if (force_update_) CheckUpdate();
+
     if (millis() - last_millis_firmware_ > kFirmwareDelay_) {
         bool fw_auto_update = properties_.find("autoupdate")->second->GetValue() == "true";
         if (fw_auto_update && time_client_ && device_->IsConnected()) {
@@ -80,42 +102,21 @@ void AutoUpdateFw::CheckFirmware(uint8_t firmwareVer) {
             Serial.printf("actual time is %i:", hours);
             if (hours == fw_settings.hours_) {
                 uint8_t minutes = time_client_->GetMinutes();
-                Serial.printf("%i\r\n", minutes);
+                Serial.printf("%i\n", minutes);
 
-                if (minutes == fw_settings.minutes_) {
-                    if (CheckFirmwareVersion() > firmwareVer) {
-                        Serial.println("Available new firmware");
-                        UpdateFirmware();
-                    } else {
-                        Serial.println("Already on latest version");
-                    }
-                }
+                if (minutes == fw_settings.minutes_) CheckUpdate();
             }
         }
         last_millis_firmware_ = millis();
     }
-    if (force_update_) {
-        String firmware_state = fwStates_.find(FW_CHECK)->second.c_str();
-        properties_.find("updatestate")->second->SetValue(firmware_state);
-        if (CheckFirmwareVersion() > firmwareVer) {
-            Serial.println("Available new firmware");
-            UpdateFirmware();
-        } else {
-            String firmware_state = fwStates_.find(FW_ACTUAL)->second.c_str();
-            properties_.find("updatestate")->second->SetValue(firmware_state);
-            Serial.println("Already on latest version");
-            force_update_ = false;
-        }
-    }
-    if (new_fw_settings_) {
-        if (SaveFwSettings()) new_fw_settings_ = false;
-    }
 }
+
 
 uint8_t AutoUpdateFw::CheckFirmwareVersion() {
     uint8_t new_version = 0;
     HTTPClient httpClient;
     String url = "https://" + host + kUrlFirmwareVersionPath_ + product_id + "/firmware-version";
+    Serial.println("[D]CheckFirmwareVersion " + url);
     if (httpClient.begin(url)) {  // HTTPS
         int http_code = httpClient.GET();
         if (http_code == 200) {
@@ -133,17 +134,21 @@ uint8_t AutoUpdateFw::CheckFirmwareVersion() {
 }
 
 void AutoUpdateFw::UpdateFirmware() {
+    if (new_fw_settings_) {
+        if (SaveFwSettings()) new_fw_settings_ = false;
+    }
     String firmware_state = fwStates_.find(FW_UPDATING)->second.c_str();
     properties_.find("updatestate")->second->SetValue(firmware_state);
     Serial.println("updating");
     HTTPClient httpClient;
-    String url = "https://" + host + kUrlFirmwareFilePath_ + product_id + ".bin";
-    Serial.println(url);
+    String apiPrefix = fw_settings.staging_status ? kUrlStagingFirmwareFilePath_ : kUrlFirmwareFilePath_;
+    String url = "https://" + host + apiPrefix + product_id + ".bin";
+    Serial.println("[D] UpdateFirmware " + url);
     if (httpClient.begin(url)) {  // HTTPS
         uint8_t update_status = httpUpdate.update(httpClient);
         switch (update_status) {
             case HTTP_UPDATE_FAILED:
-                Serial.printf("HTTP_UPDATE_FAILD Error (%d): %s", httpUpdate.getLastError(),
+                Serial.printf("HTTP_UPDATE_FAILED Error (%d): %s", httpUpdate.getLastError(),
                               httpUpdate.getLastErrorString().c_str());
                 firmware_state = fwStates_.find(FW_FAILED)->second.c_str();
                 properties_.find("updatestate")->second->SetValue(firmware_state);
@@ -160,21 +165,42 @@ void AutoUpdateFw::UpdateFirmware() {
 bool AutoUpdateFw::LoadFwSettings() {
     ReadSettings("/fwconf.txt", reinterpret_cast<byte*>(&fw_settings), sizeof(fw_settings));
 
-    if (fw_settings.version_) {
+    String str_staging_status = fw_settings.staging_status ? "true" : "false";
+    properties_.find("staging")->second->SetValue(str_staging_status);
+    properties_.find("staging")->second->SetHasNewValue(false);
+
+    uint16_t fw_ver_actual = device_->GetFirmwareVersion().toInt();
+    uint16_t fw_ver_memory = fw_settings.version_;
+
+    if (fw_ver_memory == 0) {
+        Serial.println("[D] No version, probably 1st start");
+        properties_.find("version")->second->SetValue(String(fw_ver_actual));
+        fw_settings.version_ = fw_ver_actual;
+        fw_ver_memory = fw_ver_actual;
+    } else {
         properties_.find("version")->second->SetValue(String(fw_settings.version_));
         properties_.find("version")->second->SetHasNewValue(false);
-
-        String auto_update_value = fw_settings.autoUpdate_ ? "true" : "false";
-        properties_.find("autoupdate")->second->SetValue(auto_update_value);
-        properties_.find("autoupdate")->second->SetHasNewValue(false);
-
-        properties_.find("updatetime")->second->SetValue(TimeToStr(fw_settings.hours_, fw_settings.minutes_).c_str());
-        properties_.find("updatetime")->second->SetHasNewValue(false);
-
-        return true;
     }
 
-    return false;
+    if (fw_ver_actual != fw_ver_memory) {
+        Serial.println("Firmware updated");
+        fw_updated_ = true;
+    } else {
+        String firmware_state = fwStates_.find(FW_ACTUAL)->second.c_str();
+        properties_.find("updatestate")->second->SetValue(firmware_state);
+    }
+
+    String auto_update_value = fw_settings.autoUpdate_ ? "true" : "false";
+    properties_.find("autoupdate")->second->SetValue(auto_update_value);
+    properties_.find("autoupdate")->second->SetHasNewValue(false);
+
+    properties_.find("updatetime")->second->SetValue(TimeToStr(fw_settings.hours_, fw_settings.minutes_).c_str());
+    properties_.find("updatetime")->second->SetHasNewValue(false);
+
+    properties_.find("update")->second->SetValue("");
+    properties_.find("update")->second->SetHasNewValue(false);
+
+    return true;
 }
 
 void AutoUpdateFw::SetTimeClient(TimeClient* time_client) { this->time_client_ = time_client; }

@@ -148,7 +148,6 @@ void WebServerBase::SetupWebServer() {
     });
 
     server_->on("/scan", HTTP_GET, [this](AsyncWebServerRequest *request) {
-        OnRequestWithAuth(request, [this](AsyncWebServerRequest *request) {
             DynamicJsonDocument doc(1024);
             int n = WiFi.scanComplete();
             if (n == WIFI_SCAN_FAILED) {
@@ -165,7 +164,6 @@ void WebServerBase::SetupWebServer() {
             String response;
             serializeJson(doc, response);
             request->send(200, "application/json", response);
-        });
     });
 
     server_->on("/connectedwifi", HTTP_GET, [this](AsyncWebServerRequest *request) {

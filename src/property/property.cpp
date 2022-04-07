@@ -63,13 +63,20 @@ bool Property::Init(Homie* homie) {
 }
 
 void Property::SetValue(String value) {
+    if (!Validate(value)) {
+        if (homie_ != nullptr) {
+            if (homie_->PublishError(*this, error_code, error_message)) this->ClearError();
+        }
+        return;
+    }
+
     this->has_new_value_ = value_ != value;
-
     this->value_ = value;
-
     HandleSettingNewValue();
+
     if (homie_ != nullptr) homie_->Publish(*this, "", value_, retained_);
 }
+
 
 void Property::HandleSettingNewValue() {}
 String Property::GetValue() const { return value_; }
@@ -86,3 +93,18 @@ void Property::HandleCurrentState() {}
 bool Property::HasNewValue() { return has_new_value_; }
 
 void Property::SetHasNewValue(bool has_new_value) { has_new_value_ = has_new_value; }
+
+bool Property::Validate(String value) {
+    return true;
+}
+
+void Property::SetError(String code, String message) {
+    this->error_code = code;
+    this->error_message = message;
+}
+
+void Property::ClearError() {
+    Serial.println("[D] Property::ClearError: " + error_code + " , " + error_message);
+    error_code = "";
+    error_message = "";
+}

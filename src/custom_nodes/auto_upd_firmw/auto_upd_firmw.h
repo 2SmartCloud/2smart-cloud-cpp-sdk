@@ -27,6 +27,7 @@ class AutoUpdateFw : public Node {
         uint8_t version_;
         uint8_t hours_;
         uint8_t minutes_;
+        bool staging_status;
     } FwSettings;
 
     const uint16_t kLoopDelay_ = 10 * 1000;      // sec
@@ -34,9 +35,10 @@ class AutoUpdateFw : public Node {
 
     const char* kUrlFirmwareVersionPath_ = "/firmwares/v1/products/";  // then ad "product_id" and "firmware-version"
     const char* kUrlFirmwareFilePath_ = "/firmwares/v1/";              // then ad "product_id".bin
+    const char* kUrlStagingFirmwareFilePath_ = "/firmwares/v1/staging/";  // staging path
 
     TimeClient* time_client_ = nullptr;
-
+    void CheckUpdate();
     void CheckFirmware(uint8_t firmware_ver);
     uint8_t CheckFirmwareVersion();
     void UpdateFirmware();

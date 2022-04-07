@@ -5,12 +5,11 @@
 #include "sha256/src/mbdtls.h"
 
 std::string RandomString(uint8_t length) {
-    unsigned long seed = esp_random();
-
+    uint32_t seed = esp_random();
     return RandomString(seed, length);
 }
 
-std::string RandomString(unsigned long seed, uint8_t length) {
+std::string RandomString(uint32_t seed, uint8_t length) {
     srand(seed);
     const char *letters[62] = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p",
                                "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "1", "2", "3", "4", "5", "6",
