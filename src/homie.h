@@ -28,6 +28,7 @@ class Homie {
     void SetDevice(Device* device);
 
     bool Init(String user_hash, String host, String broker_port, String token, MQTT_CALLBACK_SIGNATURE);
+    bool PublishError(const Property& property, String code, String message);
 
     bool Publish(const Device& device, String attribute, String value, bool retained);      // for device
     bool Publish(const Node& node, String attribute, String value, bool retained);          // for node
@@ -62,4 +63,5 @@ class Homie {
     String GetTopicForEntity(const Node& Node, String attribute);      // for node
     String GetTopicForEntity(const Property& property);                // for property
     String GetValueTopicForEntity(Property* property);
+    String GetTopicForEntity(const Property& property, bool isError);
 };

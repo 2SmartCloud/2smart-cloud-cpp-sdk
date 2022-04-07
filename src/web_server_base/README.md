@@ -18,51 +18,51 @@ Creates asynchronous web server object.
 Setting up web server.
 Setting up web server. Setting up handlers for the next methods.
 
-**GET** /
+**GET** /  
 Opens the admin page index.html.
 
-**GET** /index.html
+**GET** /index.html  
 Opens the admin page index.html.
 
-**GET** /wifi.html
+**GET** /wifi.html  
 Opens the wifi network connection page wifi.html
 
-**GET** /static/favicon.png
+**GET** /static/favicon.png  
 Returns the favicon.png file.
 
-**GET** /static/logo.svg
+**GET** /static/logo.svg  
 Returns the file logo.svg.
 
-**GET** /styles.css
+**GET** /styles.css  
 Returns the styles.css file.
 
-**GET** /healthcheck
+**GET** /healthcheck  
 Returns code 200.
 
-**GET** /reboot
+**GET** /reboot  
 Reboots the ESP.
 
-**GET** /resetdefault
+**GET** /resetdefault  
 Clears user parameters from memory.
 
-**GET** /newauthpass
+**GET** /newauthpass  
 Sets a new password and reboots the ESP to apply the changes.
 Query params:
   - newpass - new password to be set
 
-**GET** /setwifi
+**GET** /setwifi  
 Saves the login and password for the wifi network. Reboots the ESP to apply the changes.
 Query params:
   - ssid - the name of the wifi network;
   - pass - password.
 
-**GET** /scan
+**GET** /scan  
 Scans and returns a list of wifi networks.
 
-**GET** /connectedwifi
+**GET** /connectedwifi  
 Returns the name of the wifi network to which the device is connected.
 
-**GET** /setcredentials
+**GET** /setcredentials  
 A method that saves new parameters from the admin panel. Reboots the ESP to apply the changes.
 Query params:
   - mail - user's email.
@@ -72,7 +72,7 @@ Query params:
   - hostname - the address where the MQTT broker is installed.
   - deviceId - device identifier.
 
-**GET** /pair
+**GET** /pair  
 A method that saves new parameters from a mobile application. Reboots the ESP to apply the changes.
 Query params:
   - ssid - user's email.
@@ -82,5 +82,5 @@ Query params:
   - host - the address where the MQTT broker is installed.
   - brport - MQTT port of the broker.
 
-**POST** /firmware/upload
+**POST** /firmware/upload  
 Receives the new firmware file and updates the firmware, then reboots the ESP.

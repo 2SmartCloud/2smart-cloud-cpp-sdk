@@ -24,8 +24,43 @@ bool Homie::Init(String user_hash, String host, String broker_port, String token
 
 void Homie::SetDevice(Device* device) { this->device_ = device; }
 
+bool Homie::PublishError(const Property& property, String code, String message) {
+    String topic = this->GetTopicForEntity(property, true);
+    String value = "{\"code\": \"" + code + "\", \"message\": \"" + message + "\"}";
+    return this->mqtt_client_->Publish(topic, value, false);
+}
+
+String Homie::GetTopicForEntity(const Property& property, bool isError) {
+    Node* node = property.GetNode();
+    Device* device = node ? node->GetDevice() : property.GetDevice();
+    String topic;
+    if (isError) topic = user_hash_ + "/errors" + "/sweet-home/";
+    else
+    topic = user_hash_ + "/sweet-home/";
+    topic += device->GetId() + "/";
+    if (node) {
+        topic += node->GetId() + '/';
+    }
+    switch (property.GetType()) {
+        case OPTION:
+            topic += "$options/";
+            topic += property.GetId();
+            break;
+        case TELEMETRY:
+            topic += "$telemetry/";
+            topic += property.GetId();
+            break;
+        case SENSOR:
+            topic += property.GetId();
+            break;
+    }
+
+    return topic;
+}
+
 bool Homie::Publish(const Property& property, String attribute, String value, bool retained) {
     String topic = this->GetTopicForEntity(property);
+
     if (attribute != "") {
         topic += "/$";
     }
@@ -63,7 +98,6 @@ String Homie::GetTopicForEntity(const Device& device, String attribute) {
 
 String Homie::GetTopicForEntity(const Node& node, String attribute) {
     Device* device = node.GetDevice();
-
     String topic = this->user_hash_;
     topic += "/sweet-home/";
     topic += device->GetId() + "/";
@@ -76,32 +110,7 @@ String Homie::GetTopicForEntity(const Node& node, String attribute) {
 }
 
 String Homie::GetTopicForEntity(const Property& property) {
-    Node* node = property.GetNode();
-
-    Device* device = node ? node->GetDevice() : property.GetDevice();
-
-    String topic = user_hash_ + "/sweet-home/";
-    topic += device->GetId() + "/";
-
-    if (node) {
-        topic += node->GetId() + '/';
-    }
-
-    switch (property.GetType()) {
-        case OPTION:
-            topic += "$options/";
-            topic += property.GetId();
-            break;
-        case TELEMETRY:
-            topic += "$telemetry/";
-            topic += property.GetId();
-            break;
-        case SENSOR:
-            topic += property.GetId();
-            break;
-    }
-
-    return topic;
+    return this->GetTopicForEntity(property, false);
 }
 
 void Homie::HandleMessage(String topic, byte* payload, unsigned int length) {
@@ -132,7 +141,6 @@ void Homie::HandleMessage(String topic, byte* payload, unsigned int length) {
     for (int i = 0; i < length; i++) {
         value += static_cast<char>(payload[i]);  // ------------ write payload
     }
-
     property->SetValue(value);
 }
 

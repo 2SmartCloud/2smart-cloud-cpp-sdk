@@ -33,6 +33,9 @@ class Property {
     Device* GetDevice() const;
 
     bool HasNewValue();
+    virtual bool Validate(String value);
+    void ClearError();
+    void SetError(String code, String message);
 
     void SetValue(String value);
     void SetHasNewValue(bool has_new_value);
@@ -54,6 +57,9 @@ class Property {
     String format_ = "";
     String unit_ = "";
     String value_ = "";
+
+    String error_code = "";
+    String error_message = "";
 
     Node* node_ = nullptr;
     Device* device_ = nullptr;
