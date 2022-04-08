@@ -26,7 +26,7 @@ String broker_port = "1883";
 String web_auth_password = "";
 const char *http_username = "admin";
 // -------------------------------------------------------Production settings
-// String device_id = "";  // DeviceID/ MAC:adress
+String device_id = "";  // DeviceID/ MAC:adress
 // -------------------------------------------------------MQTT variables
 
 const char *firmware_name = product_id.c_str();
