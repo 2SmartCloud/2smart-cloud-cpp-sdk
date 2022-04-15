@@ -147,6 +147,30 @@ void WebServerBase::SetupWebServer() {
         });
     });
 
+    server_->on("/scan/v2", HTTP_GET, [this](AsyncWebServerRequest *request) {
+            DynamicJsonDocument doc(1024);
+            int n = WiFi.scanComplete();
+            if (n == WIFI_SCAN_FAILED) {
+                WiFi.scanNetworks(true);
+            } else if (n) {
+                for (int i = 0; i < n; ++i) {
+                int8_t dBm = (WiFi.RSSI(i));
+                uint8_t wifi_strenght = RSSIToPercent(dBm);
+
+                    JsonObject doc_nested = doc.createNestedObject(WiFi.SSID(i));
+                    doc_nested["encType"] = String(WiFi.encryptionType(i));
+                    doc_nested["signal"] = String(wifi_strenght);
+                }
+                WiFi.scanDelete();
+                if (WiFi.scanComplete() == WIFI_SCAN_FAILED) {
+                    WiFi.scanNetworks(true);
+                }
+            }
+            String response;
+            serializeJson(doc, response);
+            request->send(200, "application/json", response);
+    });
+
     server_->on("/scan", HTTP_GET, [this](AsyncWebServerRequest *request) {
             DynamicJsonDocument doc(1024);
             int n = WiFi.scanComplete();

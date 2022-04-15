@@ -58,3 +58,10 @@ String Sha256(String data) {
     }
     return result;
 }
+
+uint8_t RSSIToPercent(int8_t dBm) {
+    uint8_t wifiQuality = 2 * (dBm + 100);
+    if (wifiQuality > 100) wifiQuality = 100;
+
+    return wifiQuality;
+}
