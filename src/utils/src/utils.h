@@ -9,3 +9,5 @@ std::string RandomString(uint32_t seed, uint8_t length);
 String TimeToStr(uint8_t hours, uint8_t minutes);
 
 String Sha256(String data);
+
+uint8_t RSSIToPercent(int8_t dBm);
