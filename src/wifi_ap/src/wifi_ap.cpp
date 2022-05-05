@@ -5,9 +5,9 @@ WifiAp::WifiAp() {
     digitalWrite(kLedStatus_, LOW);
 }
 
-void WifiAp::Start(String ssid_name) {
+void WifiAp::Start(String ssid_name, String ssid_pass) {
     WiFi.mode(WIFI_AP);
-    WiFi.softAP(ssid_name.c_str());
+    WiFi.softAP(ssid_name.c_str(), ssid_pass.c_str());
     IPAddress local_ip(192, 168, 4, 1);
     IPAddress gateway(192, 168, 4, 1);
     IPAddress subnet(255, 255, 255, 0);

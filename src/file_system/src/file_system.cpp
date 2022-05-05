@@ -22,7 +22,7 @@ bool LoadConfig() {
         return false;
     }
 
-    UserData user_data = {"", "", "", "", "", "", "", "", "", ""};
+    UserData user_data = {"", "", "", "", "", "", "", "", "", "", ""};
     ReadSettings("/config.txt", reinterpret_cast<byte *>(&user_data), sizeof(user_data));
     if (strlen(user_data.ssid_name) == 0) {
         EraseFlash();
@@ -38,12 +38,13 @@ bool LoadConfig() {
     device_id = user_data.device_id;
     product_id = user_data.product_id;
     web_auth_password = user_data.web_auth_password;
+    ap_password = (user_data.ap_password[0] == '\0') ? ap_password : user_data.ap_password;
 
     return true;
 }
 
 bool SaveConfig() {
-    UserData user_data = {"", "", "", "", "", "", "", "", "", ""};
+    UserData user_data = {"", "", "", "", "", "", "", "", "", "", ""};
     ssid_name.toCharArray(user_data.ssid_name, ssid_name.length() + 1);
     ssid_password.toCharArray(user_data.ssid_password, ssid_password.length() + 1);
     person_mail.toCharArray(user_data.person_mail, person_mail.length() + 1);
@@ -54,13 +55,14 @@ bool SaveConfig() {
     device_id.toCharArray(user_data.device_id, device_id.length() + 1);
     product_id.toCharArray(user_data.product_id, product_id.length() + 1);
     web_auth_password.toCharArray(user_data.web_auth_password, web_auth_password.length() + 1);
+    ap_password.toCharArray(user_data.ap_password, ap_password.length() + 1);
 
     return WriteSettings("/config.txt", reinterpret_cast<byte *>(&user_data), sizeof(user_data));
 }
 
 bool EraseFlash() {
     Serial.println("Create default config file");
-    UserData user_data = {"Wifi_Name", "", "", "", "", "", "", "", "", "admin"};
+    UserData user_data = {"Wifi_Name", "", "", "", "", "", "", "", "", "admin", ""};
     product_id.toCharArray(user_data.product_id, product_id.length() + 1);
 
     if (WriteSettings("/config.txt", reinterpret_cast<byte *>(&user_data), sizeof(user_data))) ESP.restart();

@@ -1,6 +1,18 @@
 #pragma once
 #include <SPIFFS.h>  // For FS & FileConfig
 
+extern String ssid_name;
+extern String ssid_password;
+extern String person_mail;
+extern String person_id;
+extern String token;
+extern String host;
+extern String broker_port;
+extern String device_id;
+extern String product_id;
+extern String web_auth_password;
+extern String ap_password;
+
 typedef struct {
     char ssid_name[33];      // WiFi name
     char ssid_password[65];  // WiFi password
@@ -12,18 +24,10 @@ typedef struct {
     char device_id[32];
     char product_id[32];
     char web_auth_password[32];
+    char ap_password[64];
 } UserData;
 
-extern String ssid_name;
-extern String ssid_password;
-extern String person_mail;
-extern String person_id;
-extern String token;
-extern String host;
-extern String broker_port;
-extern String device_id;
-extern String product_id;
-extern String web_auth_password;
+
 
 extern bool erase_flag;
 
