@@ -28,6 +28,7 @@ class AutoUpdateFw : public Node {
         uint8_t hours_;
         uint8_t minutes_;
         bool staging_status;
+        bool staging_update_notify;
     } FwSettings;
 
     const uint16_t kLoopDelay_ = 10 * 1000;      // sec

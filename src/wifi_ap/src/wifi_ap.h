@@ -7,7 +7,7 @@ class WifiAp {
     WifiAp();
     ~WifiAp() { Serial.println("WifiAp destroyed"); }
 
-    void Start(String ssid_name);
+    void Start(String ssid_name, String ssid_pass);
 
     void Blink();
 

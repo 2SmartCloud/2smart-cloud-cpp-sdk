@@ -1,23 +1,10 @@
 #include "2smart.h"
 
-#include "file_system/src/file_system.h"
-#include "web_server_base/src/web_server_base.h"
-#include "wifi_ap/src/wifi_ap.h"
-#include "wifi_client/src/wifi_client.h"
-#include "custom_nodes/reset_button/rst_button.h"
-#include "custom_sensors/UpdateTime.h"
-
-MqttClient *mqtt_client = new MqttClient();
-Homie homie(mqtt_client);
-Notifier notifier(mqtt_client);
-Device device(&homie);
-WebServerBase web_server(&device);
-NtpTimeClient *time_client = new NtpTimeClient();
-
-WifiClient wifi_client;
 // ----------------------------------------------------------HTTP-----------
 String ssid_name = "Wifi_Name";  // WiFi name
 String ssid_password = "";       // WiFi password
+String ap_password = "";         // initial access point password, 8-63 symbols
+                                 // |NOTE| if left empty, AP will start open, with no auth
 String person_mail = "";
 String person_id = "";
 String token = "";
@@ -27,9 +14,17 @@ String web_auth_password = "";
 const char *http_username = "admin";
 // -------------------------------------------------------Production settings
 String device_id = "";  // DeviceID/ MAC:adress
+const char *firmware_name = product_id.c_str();
 // -------------------------------------------------------MQTT variables
 
-const char *firmware_name = product_id.c_str();
+MqttClient *mqtt_client = new MqttClient();
+Homie homie(mqtt_client);
+Notifier notifier(mqtt_client);
+Device device(&homie);
+WebServerBase web_server(&device);
+NtpTimeClient *time_client = new NtpTimeClient();
+
+WifiClient wifi_client;
 
 Cloud2Smart::Cloud2Smart() {}
 
@@ -89,9 +84,11 @@ void Cloud2Smart::setup() {
 
     WifiAp wifiAP;
     if (ssid_name == "Wifi_Name" || ssid_name == "") {
-        wifiAP.Start(device_name);
+        if (ap_password.length() < 8) ap_password = "";
+        wifiAP.Start(device_name, ap_password);
         web_server.Init();
     }
+
     while (ssid_name == "Wifi_Name" || ssid_name == "") {
         // Handling buttons and offline logic
         device.HandleCurrentState();

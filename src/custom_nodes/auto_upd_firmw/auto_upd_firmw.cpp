@@ -21,15 +21,17 @@ void AutoUpdateFw::HandleCurrentState() {
     if (fw_updated_) {
         properties_.find("updatestate")->second->SetValue(fwStates_.find(FW_UPDATED)->second.c_str());
         bool is_fw_notif_enabled = device_->IsFwNotifyEnabled();
-        if (is_fw_notif_enabled) {  // user enabled notifications for device
+
+        if (is_fw_notif_enabled) {
             if (device_->SendNotification(fwStates_.find(FW_UPDATED)->second.c_str())) {
-                // reset fw_updated_ only on successfull notification
-                fw_settings.version_ = device_->GetFirmwareVersion().toInt();
-                properties_.find("version")->second->SetValue(String(fw_settings.version_));
-                SaveFwSettings();
-                fw_updated_ = false;
+              fw_settings.version_ = device_->GetFirmwareVersion().toInt();
+               properties_.find("version")->second->SetValue(String(fw_settings.version_));
+               fw_updated_ = false;
             }
+        } else {
+            fw_updated_ = false;
         }
+        SaveFwSettings();
     }
 
     CheckFirmware(fw_settings.version_);
@@ -78,6 +80,8 @@ void AutoUpdateFw::CheckUpdate() {
     String firmware_state = fwStates_.find(FW_CHECK)->second.c_str();
     properties_.find("updatestate")->second->SetValue(firmware_state);
     if (fw_settings.staging_status) {
+        fw_settings.staging_update_notify = true;
+        new_fw_settings_ = true;
         Serial.println("[D] Updating to new staging firmware...");
         UpdateFirmware();
     } else if (CheckFirmwareVersion() != properties_.find("version")->second->GetValue().toInt()) {
@@ -183,11 +187,17 @@ bool AutoUpdateFw::LoadFwSettings() {
     }
 
     if (fw_ver_actual != fw_ver_memory) {
-        Serial.println("Firmware updated");
+        Serial.println("[i] Firmware updated");
         fw_updated_ = true;
     } else {
-        String firmware_state = fwStates_.find(FW_ACTUAL)->second.c_str();
-        properties_.find("updatestate")->second->SetValue(firmware_state);
+        if (fw_settings.staging_update_notify) {
+            fw_settings.staging_update_notify = false;
+            fw_updated_ = true;
+            Serial.println("[i] Staging firmware updated");
+        } else {
+            String firmware_state = fwStates_.find(FW_ACTUAL)->second.c_str();
+            properties_.find("updatestate")->second->SetValue(firmware_state);
+        }
     }
 
     String auto_update_value = fw_settings.autoUpdate_ ? "true" : "false";
