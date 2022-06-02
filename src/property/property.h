@@ -43,6 +43,7 @@ class Property {
     virtual void HandleCurrentState();
 
     virtual void HandleSettingNewValue();
+    bool Subscribe(Homie* homie);
 
  protected:
     PROPERTY_TYPE type_;

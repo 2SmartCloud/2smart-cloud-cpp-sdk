@@ -79,7 +79,7 @@ bool Device::InitProperties() {
     for (auto it = begin(properties_); it != end(properties_); it++) {
         if (!(*it->second).Init(homie_)) {
             status = false;
-            Serial.println("Propertie init failed");
+            Serial.println("Property init failed");
         }
     }
     Serial.println("Properties init success");
@@ -127,6 +127,31 @@ void Device::SendStateStatus() {
     }
 }
 
+bool Device::Reconnect() {
+    if (!homie_->IsConnected()) {
+        Serial.println("Device::Reconnect: not connected to MQTT broker");
+        return false;
+    }
+
+    for (auto prop = begin(properties_); prop != end(properties_); prop++) {
+        if (!(*prop->second).Subscribe(homie_)) {
+            Serial.printf("Subscription to %s failed!\n", (*prop->second).GetId());
+            return false;
+        }
+    }
+    Serial.println("Subscribed properties - success!");
+
+    for (auto it = begin(nodes_); it != end(nodes_); it++) {
+        if (!(*it->second).Subscribe(homie_)) {
+            Serial.printf("Subscription to node %s failed!\n", (*it->second).GetId());
+            return false;
+        }
+    }
+    Serial.println("Subscribed nodes' properties - success!");
+
+    SendStateStatus();
+    return true;
+}
 void Device::SetNotifier(Notifier *notifier) { notifier_ = notifier; }
 bool Device::SendNotification(String text) {
     StaticJsonDocument<256> doc;

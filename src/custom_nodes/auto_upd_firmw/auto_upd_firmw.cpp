@@ -101,13 +101,11 @@ void AutoUpdateFw::CheckFirmware(uint8_t firmwareVer) {
     if (millis() - last_millis_firmware_ > kFirmwareDelay_) {
         bool fw_auto_update = properties_.find("autoupdate")->second->GetValue() == "true";
         if (fw_auto_update && time_client_ && device_->IsConnected()) {
-            Serial.println("auto update is true");
+            Serial.print("[i] auto update is ON, ");
             uint8_t hours = time_client_->GetHours();
-            Serial.printf("actual time is %i:", hours);
+            uint8_t minutes = time_client_->GetMinutes();
+            Serial.printf("actual time is %i:%i\n", hours, minutes);
             if (hours == fw_settings.hours_) {
-                uint8_t minutes = time_client_->GetMinutes();
-                Serial.printf("%i\n", minutes);
-
                 if (minutes == fw_settings.minutes_) CheckUpdate();
             }
         }
