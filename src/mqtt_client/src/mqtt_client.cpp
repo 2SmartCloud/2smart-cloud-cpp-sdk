@@ -41,16 +41,21 @@ bool MqttClient::Reconnect() {
     Serial.println("MqttClient::Reconnect");
     Serial.println(millis() - reconnect_mqtt_time_);
     Serial.println(kDelayForReconnectMQTT_);
-    Serial.println(!this->IsConnected());
+    Serial.println(this->IsConnected());
+
+    Serial.println("[D] disconnecting from MQTT broker");
+    client_->disconnect();
 
     if (!this->IsConnected()) {
         if (this->Connect()) {
-            Serial.println("MQTT connected");
+            Serial.print("MQTT connected, state rc=");
+            Serial.println(client_->state());
+
             mqtt_reconnected_ = true;
         } else {
             Serial.print("failed, rc=");
             Serial.print(client_->state());
-            Serial.println(" try again in 5 seconds");
+            Serial.println(", try again in 5 seconds");
         }
 
         reconnect_mqtt_time_ = millis();
@@ -83,10 +88,10 @@ bool MqttClient::IsConnected() { return client_->connected(); }
 
 bool MqttClient::IsReconnected() {
     if (mqtt_reconnected_) {
+        Serial.println("[D] IsReconnected: true");
         mqtt_reconnected_ = false;
         return true;
     }
-
     return false;
 }
 

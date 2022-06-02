@@ -29,6 +29,20 @@ bool Node::Init(Homie* homie) {
     return status;
 }
 
+bool Node::Subscribe(Homie* homie) {
+    Serial.print("Node::Subscribe: ");
+    Serial.println(name_);
+    homie_ = homie;
+
+    for (auto it = begin(properties_); it != end(properties_); ++it) {
+        if (!(*it->second).Subscribe(homie_)) {
+            Serial.printf("Subscription to %s failed!\n", (*it->second).GetId());
+            return false;
+        }
+    }
+    return true;
+}
+
 void Node::AddProperty(Property* property) {
     properties_.insert(std::pair<String, Property*>(property->GetId(), property));
 }

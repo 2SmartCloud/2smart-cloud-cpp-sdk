@@ -18,7 +18,7 @@ void WifiSignal::HandleCurrentState() {
     if (wifi_client.isConnected()) {
     this->SetValue(String(wifi_strenght));
     }
-    Serial.println("[D] WIFI %: " + String(wifi_strenght));
+    Serial.println("[i] WIFI %: " + String(wifi_strenght));
   }
 }
 

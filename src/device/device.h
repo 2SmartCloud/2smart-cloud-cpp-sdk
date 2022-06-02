@@ -51,6 +51,8 @@ class Device {
 
     void SendStateStatus();
 
+    bool Reconnect();
+
  private:
     bool InitNodes();
     bool InitProperties();

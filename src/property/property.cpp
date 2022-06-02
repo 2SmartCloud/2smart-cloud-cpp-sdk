@@ -53,13 +53,23 @@ bool Property::Init(Homie* homie) {
 
     if (!homie->Publish(*this, "", value_, retained_)) status = false;
 
-    if (!status) Serial.printf("Init property %s failed\r\n", name_.c_str());
-
-    if (settable_ && !homie->SubscribeTopic(*this)) {
-        status = false;
-        Serial.println("unsubscribed " + this->id_);
+    if (!status) {
+        Serial.printf("Init property %s failed\r\n", name_.c_str());
+        return status;
     }
-    return status;
+    return Subscribe(homie);
+}
+
+bool Property::Subscribe(Homie* homie) {
+    Serial.print("[D] Property::Subscribe : ");
+    Serial.println(this->name_);
+    homie_ = homie;
+    if (settable_ && !homie->SubscribeTopic(*this)) {
+        Serial.println("[E] Couldn't subscribe to " + this->id_);
+        return false;
+    }
+    Serial.println("[D] Successfully subscribed to: " + this->id_);
+    return true;
 }
 
 void Property::SetValue(String value) {

@@ -20,6 +20,7 @@ class Node {
     ~Node() { Serial.println("Node destroyed"); }
 
     virtual bool Init(Homie* homie);
+    virtual bool Subscribe(Homie* homie);
 
     void AddProperty(Property* property);
 
